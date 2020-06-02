@@ -4,7 +4,7 @@
 title: Loader of Variables
 '''
 
-TITLE: "Brick Breaker"
+TITLE = "Brick Breaker"
 FPS = 30
 WIDTH = 800
 HEIGHT = 600
