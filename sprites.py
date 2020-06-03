@@ -23,7 +23,7 @@ class Sprite:
         self.pos = (self.x, self.y)
         self.window = window
         self.dirX = 1
-        self.dirY = 1
+        self.dirY = -1
 
         # --- MODIFIER METHODS --- #
         # -- Dimensions -- #

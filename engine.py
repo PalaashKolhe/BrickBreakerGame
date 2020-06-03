@@ -5,10 +5,11 @@ title: Engine that glues all objects together
 '''
 
 from window import Window
-from box import Box
+from box import Box, checkCollision
 from text import Text
 from loader import *
-import pygame
+from score import Score
+from pygame import K_SPACE
 
 class Engine:
     def __init__(self):
@@ -25,6 +26,10 @@ class Engine:
         self.title = Text("BRICK BREAKER!", self.window)
         self.title.setPOS(self.title.window.getWidth() / 2 - 75,
                           3)
+
+        # Spawning score in
+        self.score = Score(self.window)
+        self.score.setPOS(3, 3)
 
         # Spawning player bar in
         self.player = Box(self.window)
@@ -45,8 +50,8 @@ class Engine:
 
         self.boxArray = []
 
-        # self.title = Text("Brick Breaker", self.window)
         self.running = True
+        self.gameStart = False
 
     def levelCreator(self):
         x = 110 # initial starting point in x plane
@@ -67,6 +72,7 @@ class Engine:
             rows += 1
 
     def run(self):
+        self.levelCreator()
         while self.running:
             # INPUTS #
             self.window.getEvents()
@@ -80,17 +86,33 @@ class Engine:
             self.window.blitSprite(self.titleBox)
             self.window.blitSprite(self.title)
 
+            self.window.blitSprite(self.score)
+
             self.window.blitSprite(self.player)
             self.window.blitSprite(self.ball)
             self.window.blitSprite(self.text)
 
-            self.levelCreator()
-
             for i in range(len(self.boxArray)):
                 self.window.blitSprite(self.boxArray[i])
 
-            # self.window.blitSprite(self.title)
             self.window.updateScreen()
+
+            ### GAME STARTS HERE ###
+            # PROCESSING #
+            if self.window.getKeyPressed()[K_SPACE] == 1: # game start
+                self.text.setText('')
+                self.gameStart = True
+
+            if self.gameStart:
+                ## Ball Movement
+                self.ball.autoMove()
+
+
+                ## Check if ball hits boxes
+                for i in range(len(self.boxArray)):
+                    if checkCollision(self.ball, self.boxArray[i]):
+                        self.boxArray.pop(i)
+                        break
 
 
 
