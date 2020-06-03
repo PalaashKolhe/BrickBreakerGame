@@ -21,7 +21,7 @@ class Text(Sprite):
     # --- MODIFIER METHODS --- #
 
     def renderText(self):
-        self.dont = font.SysFont(self.fontFam, self.fontSize)
+        self.font = font.SysFont(self.fontFam, self.fontSize)
         self.sprite = self.font.render(self.content, 1, self.color)
 
     def setText(self, content):
