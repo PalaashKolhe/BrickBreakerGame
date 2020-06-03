@@ -1,9 +1,9 @@
 # main.py
 
 '''
-title: Boxes 2.0
+title: Brick Breaker
 author: Palaash Kolhe
-date created: 2020-05-23
+date created: 2020-06-01
 '''
 
 from engine import Engine
