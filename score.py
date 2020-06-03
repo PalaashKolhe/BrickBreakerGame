@@ -10,7 +10,7 @@ class Score(Text):
     def __init__(self, window):
         Text.__init__(self, "Score: 0", window)
         self.score = 0
-        self.content = "Score: 0"
+        self.content = "Score: "
 
     # MODIFIER METHODS #
     def updateScore(self, newScore):
