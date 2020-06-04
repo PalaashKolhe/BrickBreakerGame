@@ -50,6 +50,14 @@ class Box(Sprite):
         elif self.getY() < 0:
             self.dirY = 1
 
+    def restartPositionBall(self):
+        self.setPOS(self.window.getWidth() / 2 - self.width / 2,
+                    self.window.getHeight() - self.height / 2 - 45)
+
+    def restartPositionPlayer(self):
+        self.setPOS(self.window.getWidth() / 2 - self.width / 2,
+                    self.window.getHeight() - self.height / 2 - 20)
+
     def checkCollision(self, box2):
         return self.sprite.get_rect(x = self.getX(), y = self.getY()).colliderect(box2.sprite.get_rect(x = box2.getX(), y = box2.getY()))
 
