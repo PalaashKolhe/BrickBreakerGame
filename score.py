@@ -10,13 +10,11 @@ class Score(Text):
     def __init__(self, window):
         Text.__init__(self, "Score: 0", window)
         self.score = 0
-        self.content = "Score: "
 
     # MODIFIER METHODS #
     def updateScore(self, newScore):
         self.score += newScore
-        self.setText(self.content + str(self.score))
-        self.renderText()
+        self.setText("Score: " + str(self.score))
 
     # ACCESSOR METHODS #
     def getScore(self):
