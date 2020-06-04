@@ -15,7 +15,11 @@ class Box(Sprite):
         self.setPOS(self.window.getWidth() / 2 - self.width / 2,
                     self.window.getHeight() / 2 - self.height / 2)
 
-        self.spd = 10
+        self.spd = 8
+
+    # MODIFIER METHODS #
+    def setSpeed(self, speed):
+        self.spd = speed
 
     def move(self, keys):
         if keys[K_d]  == 1:
@@ -46,11 +50,39 @@ class Box(Sprite):
         elif self.getY() < 0:
             self.dirY = 1
 
-    # def autoMoveCollisions(self):
+    def checkCollision(self, box2):
+        return self.sprite.get_rect(x = self.getX(), y = self.getY()).colliderect(box2.sprite.get_rect(x = box2.getX(), y = box2.getY()))
 
+    def checkCollisionSide(self, box2):
+        topLeft = (self.getX(), self.getY())
+        topRight = (self.getX() + self.getWidth(), self.getY())
+        bottomLeft = (self.getX(), self.getY() + self.getHeight())
+        bottomRight = (self.getX() + self.getWidth(), self.getY() + self.getHeight())
 
-def checkCollision(box1, box2):
-    return box1.sprite.get_rect(x = box1.getX(), y = box1.getY()).colliderect(box2.sprite.get_rect(x = box2.getX(), y = box2.getY()))
+        def ifWriter(coord):
+            return box2.sprite.get_rect(x = box2.getX(), y = box2.getY()).collidepoint(coord)
+
+        if ifWriter(topLeft) and ifWriter(topRight):
+            self.setY(self.getY() + 5)
+            self.dirY *= -1
+        elif ifWriter(topLeft) and ifWriter(bottomLeft):
+            self.setX(self.getX() + 5)
+            self.dirX *= -1
+        elif ifWriter(bottomLeft) and ifWriter(bottomRight):
+            self.setY(self.getY() -5)
+            self.dirY *= -1
+        elif ifWriter(bottomRight) and ifWriter(topRight):
+            self.setX(self.getX() - 5)
+            self.dirX *= -1
+        elif ifWriter(topLeft) or ifWriter(topRight):
+            self.dirY *= -1
+        elif ifWriter(topLeft) or ifWriter(bottomLeft):
+            self.dirX *= -1
+        elif ifWriter(bottomLeft) or ifWriter(bottomRight):
+            self.dirY *= -1
+        elif ifWriter(bottomRight) or ifWriter(topRight):
+            self.dirX *= -1
+
 
 if __name__ == "__main__":
     from window import Window
