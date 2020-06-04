@@ -5,11 +5,12 @@ title: Engine that glues all objects together
 '''
 
 from window import Window
-from box import Box, checkCollision
+from box import Box
 from text import Text
 from loader import *
 from score import Score
 from pygame import K_SPACE
+from life import Lives
 
 class Engine:
     def __init__(self):
@@ -27,13 +28,24 @@ class Engine:
         self.title.setPOS(self.title.window.getWidth() / 2 - 75,
                           3)
 
+        # Spawning life counter in
+        self.lives = Lives(self.window)
+        self.lives.setPOS(self.window.getWidth() - 107, 3)
+
         # Spawning score in
         self.score = Score(self.window)
         self.score.setPOS(3, 3)
 
+        # Spawning game over text in
+        self.gameOver = Text("GAME OVER", self.window, 0, 0, 'Arial', 80)
+        self.gameOver.color = RED
+        self.gameOver.renderText()
+        self.gameOver.setPOS(self.window.getWidth() / 2 - 185, self.window.getHeight() / 2 - 50)
+
         # Spawning player bar in
         self.player = Box(self.window)
         self.player.setDimensions(100, 20)
+        self.player.setSpeed(12)
         self.player.setPOS(self.player.window.getWidth() / 2 - self.player.width / 2,
                            self.player.window.getHeight() - self.player.height / 2 - 20)
 
@@ -48,10 +60,17 @@ class Engine:
         self.text.setPOS(self.text.window.getWidth() / 2 - self.text.width / 2 - 43,
                          self.text.window.getHeight() - self.text.height / 2 - 65)
 
+        self.mainBoxArray = [self.player, self.titleBox]
         self.boxArray = []
 
         self.running = True
+        self.playing = True
         self.gameStart = False
+
+        # Spawning Level Complete Message
+        self.levelComplete = Text("Proceeding to Next Level", self.window, 0, 0, 'Arial', 50)
+        self.levelComplete.color = BLACK
+        self.levelComplete.setPOS(self.text.window.getWidth() / 2 - 180, self.window.getHeight() / 2 - 50)
 
     def levelCreator(self):
         x = 110 # initial starting point in x plane
@@ -79,6 +98,7 @@ class Engine:
 
             # PROCESSING #
             self.player.move(self.window.getKeyPressed())
+            finalWindowUpdate = False # for the program to update and blit everything one last time before displaying game over
 
             # OUTPUTS #
             self.window.clearScreen()
@@ -87,32 +107,60 @@ class Engine:
             self.window.blitSprite(self.title)
 
             self.window.blitSprite(self.score)
+            self.window.blitSprite(self.lives)
 
             self.window.blitSprite(self.player)
             self.window.blitSprite(self.ball)
             self.window.blitSprite(self.text)
+
+            self.window.blitSprite(self.levelComplete)
 
             for i in range(len(self.boxArray)):
                 self.window.blitSprite(self.boxArray[i])
 
             self.window.updateScreen()
 
-            ### GAME STARTS HERE ###
-            # PROCESSING #
-            if self.window.getKeyPressed()[K_SPACE] == 1: # game start
-                self.text.setText('')
-                self.gameStart = True
+            if not self.playing:
+                finalWindowUpdate = True
 
-            if self.gameStart:
-                ## Ball Movement
-                self.ball.autoMove()
+            if self.playing:
+                ### GAME STARTS HERE ###
+                # PROCESSING #
+                if self.window.getKeyPressed()[K_SPACE] == 1: # game start
+                    self.text.setText('')
+                    self.gameStart = True
 
+                if self.gameStart:
+                    ## Ball Movement
+                    self.ball.autoMove()
 
-                ## Check if ball hits boxes
-                for i in range(len(self.boxArray)):
-                    if checkCollision(self.ball, self.boxArray[i]):
-                        self.boxArray.pop(i)
-                        break
+                    ## Check if ball hits bottom
+                    if self.ball.getY() > 590:
+                        self.lives.updateLives(-1)
+
+                    ## Check if lives are 0
+                    if self.lives.getLives() == 0:
+                        self.playing = False
+
+                    ## Check if ball hits boxes
+                    for i in range(len(self.mainBoxArray)):
+                        if self.ball.checkCollision(self.mainBoxArray[i]):
+                            self.ball.checkCollisionSide(self.mainBoxArray[i])
+
+                    for i in range(len(self.boxArray)):
+                        if self.ball.checkCollision(self.boxArray[i]):
+                            self.ball.checkCollisionSide(self.boxArray[i])
+                            self.score.updateScore(20)
+                            self.boxArray.pop(i)
+                            break
+
+                    # if len(self.boxArray) == 0:
+
+            while not self.playing and finalWindowUpdate:
+                self.window.getEvents()
+                self.window.blitSprite(self.gameOver)
+                self.window.updateScreen()
+
 
 
 
