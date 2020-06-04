@@ -16,6 +16,10 @@ class Lives(Text):
         self.lives += num
         self.setText("Lives Left: " + str(self.lives))
 
+    def editLives(self, life):
+        self.lives = life
+        self.setText("Lives Left: " + str(self.lives))
+
     # ACCESSOR METHODS #
     def getLives(self):
         return self.lives
