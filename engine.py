@@ -97,10 +97,9 @@ class Engine:
                 self.boxArray.append(box)
             rows += 1
 
-    def restart(self, disp):
+    def restart(self):
         self.gameStart = False
-        if disp:
-            self.lifeLostText.setText("Lost 1 life. Press space to start again")
+        self.lifeLostText.setText("Lost 1 life. Press space to start again")
         self.ball.restartPositionBall()
         self.player.restartPositionPlayer()
         self.restartVar = True
@@ -155,7 +154,7 @@ class Engine:
                     ## Check if ball hits bottom
                     if self.ball.getY() > 590:
                         self.lives.updateLives(-1)
-                        self.restart(True)
+                        self.restart()
 
                     ## Check if lives are 0
                     if self.lives.getLives() == 0:
@@ -180,13 +179,13 @@ class Engine:
                         self.window.blitSprite(self.levelComplete)
                         self.window.updateScreen()
 
-                        self.restart(False)
-
-                        self.restartVar = False
-                        self.ball.setSpeed(self.ball.spd + 2)
-                        self.player.setSpeed(self.player.spd + 2)
                         sleep(3)
-                        self.run()
+
+                        engine = Engine()
+                        engine.score.updateScore(self.score.getScore())
+                        engine.lives.editLives(self.lives.getLives())
+                        engine.run()
+
 
             while not self.playing and finalWindowUpdate:
                 self.window.getEvents()
