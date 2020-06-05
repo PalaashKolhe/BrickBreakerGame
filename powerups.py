@@ -8,7 +8,7 @@ from loader import *
 from random import randrange
 from box import Box
 
-class Powerups(Box):
+class Powerups(Box): # Concrete child class (inheriting from class Box)
     def __init__(self, window):
         Box.__init__(self, window)
         self.setDimensions(30, 30)
@@ -17,14 +17,15 @@ class Powerups(Box):
         self.spd = 2
         self.ability = 0
 
+    # Encapsulation Example #
     # MODIFIER METHODS #
-    def movePowerup(self):
+    def move(self): # move function
         self.setY(self.y + self.spd)
         if self.y > 590:
             self.setPOS(900, 700)
             self.setDimensions(0, 0)
 
-    def setPowerup(self):
+    def setPowerup(self): # define whether it is a good powerup or bad powerup
         if randrange(2) == 1:
             self.setDimensions(30, 30)
             self.color = GREEN

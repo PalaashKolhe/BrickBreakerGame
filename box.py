@@ -8,7 +8,7 @@ from sprites import Sprite
 from pygame import K_d, K_a
 import pygame
 
-class Box(Sprite):
+class Box(Sprite): # Concrete child class / concrete parent class (inheriting from class Sprite)
     def __init__(self, window):
         Sprite.__init__(self, window)
         self.setDimensions(150, 50)
@@ -17,11 +17,12 @@ class Box(Sprite):
 
         self.spd = 8
 
+    # Encapsulation Example #
     # MODIFIER METHODS #
-    def setSpeed(self, speed):
+    def setSpeed(self, speed): # set speed
         self.spd = speed
 
-    def move(self, keys):
+    def move(self, keys): # move function for player
         if keys[K_d]  == 1:
             self.x += self.spd
         elif keys[K_a] == 1:
@@ -39,7 +40,7 @@ class Box(Sprite):
 
         self.pos = (self.x, self.y)
 
-    def autoMove(self):
+    def autoMove(self): # auto move function for ball
         self.setPOS(self.getX() + (self.spd * self.dirX), self.getY() + (self.spd * self.dirY))
         if self.getX() > self.window.getWidth() - self.getWidth():
             self.dirX = -1
@@ -50,24 +51,24 @@ class Box(Sprite):
         elif self.getY() < 0:
             self.dirY = 1
 
-    def restartPositionBall(self):
+    def restartPositionBall(self): # starting position reset for ball
         self.setPOS(self.window.getWidth() / 2 - self.width / 2,
                     self.window.getHeight() - self.height / 2 - 45)
 
-    def restartPositionPlayer(self):
+    def restartPositionPlayer(self): # starting position resest for player
         self.setPOS(self.window.getWidth() / 2 - self.width / 2,
                     self.window.getHeight() - self.height / 2 - 20)
 
-    def checkCollision(self, box2):
+    def checkCollision(self, box2): # checks if any collision
         return self.sprite.get_rect(x = self.getX(), y = self.getY()).colliderect(box2.sprite.get_rect(x = box2.getX(), y = box2.getY()))
 
-    def checkCollisionSide(self, box2):
+    def checkCollisionSide(self, box2): # checks which side collided
         topLeft = (self.getX(), self.getY())
         topRight = (self.getX() + self.getWidth(), self.getY())
         bottomLeft = (self.getX(), self.getY() + self.getHeight())
         bottomRight = (self.getX() + self.getWidth(), self.getY() + self.getHeight())
 
-        def ifWriter(coord):
+        def ifWriter(coord): # local function to make code more efficient and readable
             return box2.sprite.get_rect(x = box2.getX(), y = box2.getY()).collidepoint(coord)
 
         if ifWriter(topLeft) and ifWriter(topRight):
@@ -90,20 +91,3 @@ class Box(Sprite):
             self.dirY *= -1
         elif ifWriter(bottomRight) or ifWriter(topRight):
             self.dirX *= -1
-
-
-if __name__ == "__main__":
-    from window import Window
-    from pygame import init
-
-    init()
-
-    window = Window()
-    box = Box(window)
-
-    while True:
-        window.getEvents()
-        box.move(window.getKeyPressed())
-        window.clearScreen()
-        window.blitSprite(box)
-        window.updateScreen()

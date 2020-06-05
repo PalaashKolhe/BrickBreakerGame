@@ -5,7 +5,7 @@ title: Sprites Abstract Class
 
 from pygame import Surface, SRCALPHA
 
-class Sprite:
+class Sprite: # Abstract Parent Class
     def __init__(self, window, x = 0, y = 0):
         self.width = 100
         self.height = 100
@@ -25,8 +25,8 @@ class Sprite:
         self.dirX = 1
         self.dirY = -1
 
-        # --- MODIFIER METHODS --- #
-        # -- Dimensions -- #
+    # Encapsulation Example #
+    # --- MODIFIER METHODS --- #
 
     def updateSprite(self):
         self.dimensions = (self.width, self.height)

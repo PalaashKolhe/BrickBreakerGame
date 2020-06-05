@@ -21,6 +21,7 @@ class Window:
         self.caption = pygame.display.set_caption(self.title)
         self.keysPressed = None
 
+    # Encapsulation Example #
     # --- Modifier Methods --- #
     def run(self):
         while True:

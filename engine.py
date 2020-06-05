@@ -15,7 +15,7 @@ from time import sleep
 from powerups import Powerups
 from random import randrange
 
-class Engine:
+class Engine: # class that aggregates all objects together to make one big grouped object. This is also an example of composition.
     def __init__(self):
         self.window = Window()
 
@@ -80,12 +80,14 @@ class Engine:
         self.lifeLostText.renderText()
         self.lifeLostText.setPOS(self.window.getWidth() / 2 - 160, self.window.getHeight() - 115)
 
+        # creating power up array
         self.powerupArray = []
         for i in range(5):
             powerup = Powerups(self.window)
             powerup.setPowerup()
             self.powerupArray.append(powerup)
 
+        # timer for powerup drops
         self.timer = 0
 
     def levelCreator(self):
@@ -94,7 +96,7 @@ class Engine:
         length = 100
         height = 40
 
-        rows = 0
+        rows = 0 # var to alternate x starting points between each row
         for j in range(y, y + (height * 6), height + 5):
             for i in range(x, x + (length * 6), length + 5):
                 box = Box(self.window)
@@ -106,7 +108,7 @@ class Engine:
                 self.boxArray.append(box)
             rows += 1
 
-    def restart(self):
+    def restart(self): # restart function for when ball touches ground
         self.gameStart = False
         self.lifeLostText.setText("Lost 1 life. Press space to start again")
         self.ball.restartPositionBall()
@@ -114,43 +116,35 @@ class Engine:
         self.restartVar = True
 
     def run(self):
-        global powerup
+        global powerup # local var for powerup
         self.levelCreator() # create bricks
         while self.running:
             # INPUTS #
             self.window.getEvents()
 
             # PROCESSING #
-            self.player.move(self.window.getKeyPressed())
-            finalWindowUpdate = False # for the program to update and blit everything one last time before displaying game over
+            self.player.move(self.window.getKeyPressed()) # example of polymorphism. Achieves different outcome from move() function in powerups file
+            finalWindowUpdate = False # for the program to update and blit everything one last time before displaying game over. Mainly to update lives left
 
             # OUTPUTS #
             self.window.clearScreen()
-
             self.window.blitSprite(self.titleBox)
             self.window.blitSprite(self.title)
-
             self.window.blitSprite(self.score)
             self.window.blitSprite(self.lives)
-
             self.window.blitSprite(self.player)
             self.window.blitSprite(self.ball)
             self.window.blitSprite(self.text)
-
             for i in range(len(self.boxArray)): # blit all the bricks onto window
                 self.window.blitSprite(self.boxArray[i])
-
-            try:
+            try: # blit powerup into window
                 self.window.blitSprite(powerup)
             except NameError:
                 pass
-
             if not self.playing: # so window updates one last time before displaying game over. This is required to blit lives onto window
                 finalWindowUpdate = True
-
             if self.restartVar and not finalWindowUpdate: # so "play again" only displays when a life is lost. If there are no lives left, nothing is displayed.
                 self.window.blitSprite(self.lifeLostText)
-
             self.window.updateScreen()
 
             if self.playing:
@@ -187,18 +181,17 @@ class Engine:
                         if self.ball.checkCollision(self.boxArray[i]):
                             self.ball.checkCollisionSide(self.boxArray[i])
                             self.score.updateScore(20)
-                            self.boxArray.pop(i)
+                            self.boxArray.pop(i) # remove brick from array, thereby removing the brick from the screen
                             break
 
-                    self.timer += 1
-                    print(self.timer)
-                    if self.timer == 100:
+                    self.timer += 1 # timer for powerup function
+                    if self.timer == 100: # powerups spawn between every 100 intervals
                         powerup = self.powerupArray[randrange(len(self.powerupArray))]
 
-                    try:
-                        powerup.movePowerup()
+                    try: # try function in case self.timer doesnt reach 100 and powerup is not defined
+                        powerup.move()# example of polymorphism. Achieves different outcome from move() function in box file
                         if self.player.checkCollision(powerup):
-                            self.player.setWidth(self.player.getWidth() + powerup.ability)
+                            self.player.setWidth(self.player.getWidth() + powerup.ability) # change width according to powerup
                             self.timer = 0
                             powerup.setPOS(900, 900)
                             del powerup
@@ -209,34 +202,27 @@ class Engine:
                     except NameError:
                         pass
 
-
-                    # After winning option
-                    if len(self.boxArray) == 0:
+                    # After winning the game
+                    if len(self.boxArray) == 0: # checks if no more boxes left
                         self.window.clearScreen()
-                        self.window.blitSprite(self.levelComplete)
+                        self.window.blitSprite(self.levelComplete) # print "proceeding to next level"
                         self.window.updateScreen()
                         try:
-                            del powerup
+                            del powerup # remove powerup var so it doesnt stay spawned in the next game
                         except NameError:
                             pass
 
-                        sleep(3)
+                        sleep(3) # sleep function so user can read "Proceeding to next level"
 
-                        engine = Engine()
+                        engine = Engine() # create new game but with values from previous game such as score, lives, and player bar width
                         engine.score.updateScore(self.score.getScore())
                         engine.lives.editLives(self.lives.getLives())
-                        engine.ball.setSpeed(self.ball.spd + 5)
+                        engine.ball.setSpeed(self.ball.spd + 5) # increase speed to make game harder
+                        engine.player.setSpeed(self.player.spd + 5)
                         engine.player.setWidth(self.player.getWidth())
                         engine.run()
 
-
-            while not self.playing and finalWindowUpdate:
+            while not self.playing and finalWindowUpdate: # if player loses
                 self.window.getEvents()
-                self.window.blitSprite(self.gameOver)
+                self.window.blitSprite(self.gameOver) # print game over
                 self.window.updateScreen()
-
-
-
-
-
-
