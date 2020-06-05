@@ -105,7 +105,7 @@ class Engine:
         self.restartVar = True
 
     def run(self):
-        self.levelCreator()
+        self.levelCreator() # create bricks
         while self.running:
             # INPUTS #
             self.window.getEvents()
@@ -127,11 +127,10 @@ class Engine:
             self.window.blitSprite(self.ball)
             self.window.blitSprite(self.text)
 
-
-            for i in range(len(self.boxArray)):
+            for i in range(len(self.boxArray)): # blit all the bricks onto window
                 self.window.blitSprite(self.boxArray[i])
 
-            if not self.playing:
+            if not self.playing: # so window updates one last time before displaying game over. This is required to blit lives onto window
                 finalWindowUpdate = True
 
             if self.restartVar and not finalWindowUpdate: # so "play again" only displays when a life is lost. If there are no lives left, nothing is displayed.
@@ -163,14 +162,13 @@ class Engine:
                     ## Check if ball hits boxes
                     for i in range(len(self.mainBoxArray)):
                         if self.ball.checkCollision(self.mainBoxArray[i]):
-                            self.ball.checkCollisionSide(self.mainBoxArray[i])
+                            self.ball.dirY *= -1
 
                     for i in range(len(self.boxArray)):
                         if self.ball.checkCollision(self.boxArray[i]):
                             self.ball.checkCollisionSide(self.boxArray[i])
                             self.score.updateScore(20)
                             self.boxArray.pop(i)
-
                             break
 
                     # After winning option
