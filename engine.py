@@ -12,6 +12,8 @@ from score import Score
 from pygame import K_SPACE
 from life import Lives
 from time import sleep
+from powerups import Powerups
+from random import randrange
 
 class Engine:
     def __init__(self):
@@ -61,7 +63,6 @@ class Engine:
         self.text.setPOS(self.window.getWidth() / 2 - self.text.width / 2 - 43,
                          self.window.getHeight() - self.text.height / 2 - 65)
 
-        self.mainBoxArray = [self.player, self.titleBox]
         self.boxArray = []
 
         self.running = True
@@ -78,6 +79,14 @@ class Engine:
         self.lifeLostText = Text("Lost 1 life. Press space to start again", self.window)
         self.lifeLostText.renderText()
         self.lifeLostText.setPOS(self.window.getWidth() / 2 - 160, self.window.getHeight() - 115)
+
+        self.powerupArray = []
+        for i in range(5):
+            powerup = Powerups(self.window)
+            powerup.setPowerup()
+            self.powerupArray.append(powerup)
+
+        self.timer = 0
 
     def levelCreator(self):
         x = 110 # initial starting point in x plane
@@ -105,6 +114,7 @@ class Engine:
         self.restartVar = True
 
     def run(self):
+        global powerup
         self.levelCreator() # create bricks
         while self.running:
             # INPUTS #
@@ -129,6 +139,11 @@ class Engine:
 
             for i in range(len(self.boxArray)): # blit all the bricks onto window
                 self.window.blitSprite(self.boxArray[i])
+
+            try:
+                self.window.blitSprite(powerup)
+            except NameError:
+                pass
 
             if not self.playing: # so window updates one last time before displaying game over. This is required to blit lives onto window
                 finalWindowUpdate = True
@@ -160,28 +175,58 @@ class Engine:
                         self.playing = False
 
                     ## Check if ball hits boxes
-                    for i in range(len(self.mainBoxArray)):
-                        if self.ball.checkCollision(self.mainBoxArray[i]):
-                            self.ball.dirY *= -1
+                    if self.ball.checkCollision(self.player): # check if ball hits player bar
+                        self.ball.dirY *= -1
+                        self.ball.setY(self.ball.getY() - 5)
 
-                    for i in range(len(self.boxArray)):
+                    if self.ball.checkCollision(self.titleBox): # check if ball hits top title bar
+                        self.ball.dirY *= -1
+                        self.ball.setY(self.ball.getY() + 5)
+
+                    for i in range(len(self.boxArray)): # check if ball hits bricks
                         if self.ball.checkCollision(self.boxArray[i]):
                             self.ball.checkCollisionSide(self.boxArray[i])
                             self.score.updateScore(20)
                             self.boxArray.pop(i)
                             break
 
+                    self.timer += 1
+                    print(self.timer)
+                    if self.timer == 100:
+                        powerup = self.powerupArray[randrange(len(self.powerupArray))]
+
+                    try:
+                        powerup.movePowerup()
+                        if self.player.checkCollision(powerup):
+                            self.player.setWidth(self.player.getWidth() + powerup.ability)
+                            self.timer = 0
+                            powerup.setPOS(900, 900)
+                            del powerup
+                        elif powerup.getY() > 600:
+                            self.timer = 0
+                            powerup.setPOS(900, 900)
+                            del powerup
+                    except NameError:
+                        pass
+
+
                     # After winning option
                     if len(self.boxArray) == 0:
                         self.window.clearScreen()
                         self.window.blitSprite(self.levelComplete)
                         self.window.updateScreen()
+                        try:
+                            del powerup
+                        except NameError:
+                            pass
 
                         sleep(3)
 
                         engine = Engine()
                         engine.score.updateScore(self.score.getScore())
                         engine.lives.editLives(self.lives.getLives())
+                        engine.ball.setSpeed(self.ball.spd + 5)
+                        engine.player.setWidth(self.player.getWidth())
                         engine.run()
 
 
