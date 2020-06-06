@@ -14,7 +14,7 @@ class Powerups(Box): # Concrete child class (inheriting from class Box)
         self.setDimensions(30, 30)
         self.setPOS(randrange(800), randrange(200))
         self.window = window
-        self.spd = 2
+        self.spd = 4
         self.ability = 0
 
     # Encapsulation Example #
