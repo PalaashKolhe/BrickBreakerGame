@@ -59,8 +59,8 @@ class Engine: # class that aggregates all objects together to make one big group
                          self.ball.window.getHeight() - self.ball.height / 2 - 45)
 
         # Spawning text in
-        self.text = Text("Press SPACE to start!", self.window)
-        self.text.setPOS(self.window.getWidth() / 2 - self.text.width / 2 - 43,
+        self.text = Text('''Press SPACE to start!       A = Move Left      D = Move Right''', self.window)
+        self.text.setPOS(self.window.getWidth() / 2 - self.text.width / 2 - 210,
                          self.window.getHeight() - self.text.height / 2 - 65)
 
         self.boxArray = []
@@ -217,8 +217,8 @@ class Engine: # class that aggregates all objects together to make one big group
                         engine = Engine() # create new game but with values from previous game such as score, lives, and player bar width
                         engine.score.updateScore(self.score.getScore())
                         engine.lives.editLives(self.lives.getLives())
-                        engine.ball.setSpeed(self.ball.spd + 5) # increase speed to make game harder
-                        engine.player.setSpeed(self.player.spd + 5)
+                        engine.ball.setSpeed(self.ball.spd + 2) # increase speed to make game harder
+                        engine.player.setSpeed(self.player.spd + 2)
                         engine.player.setWidth(self.player.getWidth())
                         engine.run()
 
